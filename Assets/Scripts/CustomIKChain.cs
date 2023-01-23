@@ -62,11 +62,12 @@ public class CustomIKChain
         // Dans le cas d'une unique chaine, ne rien faire pour l'instant.
 
         // si le premier courant est egal au premier de j, le courant recupere j
-        if (First().GetHashCode() == j.First().GetHashCode())
-            joints[0] = j.First();
+        if (First().name == j.Last().name){
+            joints[0] = j.Last();
+        }
         // pareil pour le dernier
-        if (Last().GetHashCode() == j.Last().GetHashCode())
-            joints[joints.Count - 1] = j.Last();
+        if (Last().GetHashCode() == j.First().GetHashCode())
+            joints[joints.Count - 1] = j.First();
     }
 
 
@@ -84,7 +85,8 @@ public class CustomIKChain
         // TODO : une passe remontée de FABRIK. Placer le noeud N-1 sur la cible, 
         // puis on remonte du noeud N-2 au noeud 0 de la liste 
         // en résolvant les contrainte avec la fonction Solve de CustomIKJoint.
-        joints[joints.Count - 1].SetPosition(endTarget.position);
+        if (endTarget != null)
+            Last().SetPosition(endTarget.position);
         for(int i = joints.Count - 2; i >= 0; i--)
         {
             joints[i].Solve(joints[i + 1], constraints[i]);
@@ -95,7 +97,8 @@ public class CustomIKChain
     {
         // TODO : une passe descendante de FABRIK. Placer le noeud 0 sur son origine puis on descend.
         // Codez et deboguez déjà Backward avant d'écrire celle-ci.
-        joints[0].SetPosition(rootTarget.position);
+        if (rootTarget != null)
+            First().SetPosition(rootTarget.position);
         for (int i = 1; i < joints.Count; i++)
         {
             joints[i].Solve(joints[i - 1], constraints[i - 1]);
