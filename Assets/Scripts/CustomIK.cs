@@ -71,10 +71,10 @@ public class CustomIK : MonoBehaviour
         if (createChains)
             Start();
 
-        if (Input.GetKeyDown(KeyCode.I))
-        {
+        //if (Input.GetKeyDown(KeyCode.I))
+        //{
             IKOneStep(true);
-        }
+        //}
 
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -93,9 +93,9 @@ public class CustomIK : MonoBehaviour
         {
             // TODO : IK Backward (remontée), appeler la fonction Backward de IKChain 
             // sur toutes les chaines cinématiques.
-            foreach (var ch in chains)
+            for (int i = chains.Count - 1; i >= 0; i--)
             {
-                ch.Backward();
+                chains[i].Backward();
             }
 
             // TODO : appliquer les positions des IKJoint aux transform en appelant ToTransform de IKChain
@@ -123,6 +123,7 @@ public class CustomIK : MonoBehaviour
     void CreateSubChain(Transform root, Transform current, bool isRoot)
     {
         Transform[] children = current.GetComponentsInChildren<Transform>();
+        Transform target = null;
 
         while (current.childCount == 1)
         {
@@ -133,14 +134,24 @@ public class CustomIK : MonoBehaviour
         //trouver le noeud target qui correspond
         foreach (var node in nodes)
         {
-            if (node.srcNode == current)
-                chains.Add(new CustomIKChain(current, root, node.targetNode));
+            if (node.srcNode == current) 
+                target = node.targetNode;
+        }
+        if (isRoot)
+        {
+            chains.Add(new CustomIKChain(current, root, root, target));
+            isRoot = false;
+        }
+        else
+        {
+            Debug.Log("added non root elt");
+            chains.Add(new CustomIKChain(current, root, null, target));
         }
 
         for (int i = 1; i < children.Length; i++)
         {
-            if (children[i].parent.GetHashCode() == current.GetHashCode())
-                CreateSubChain(current, children[i], false);
+            if (children[i].parent.name == current.name)
+                CreateSubChain(current, children[i], isRoot);
         }
 
     }

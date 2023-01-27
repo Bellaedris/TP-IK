@@ -6,6 +6,10 @@ public class IKTargetMovement : MonoBehaviour
 {
     public float speed = 1f;
 
+    public Transform target1;
+
+    public Transform target2;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,9 +19,22 @@ public class IKTargetMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float vSpeed = Input.GetAxis("Vertical");
-        float hSpeed = Input.GetAxis("Horizontal");
+        if (Input.GetKey(KeyCode.LeftArrow))
+            target1.position += Vector3.left * speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.RightArrow))
+            target1.position += Vector3.right * speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.UpArrow))
+            target1.position += Vector3.forward * speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.DownArrow))
+            target1.position += Vector3.back * speed * Time.deltaTime;
         
-        transform.position += Vector3.forward * vSpeed + Vector3.right * hSpeed;
+        if (Input.GetKey(KeyCode.Q))
+            target2.position += Vector3.left * speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.D))
+            target2.position += Vector3.right * speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.Z))
+            target2.position += Vector3.forward * speed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.S))
+            target2.position += Vector3.back * speed * Time.deltaTime;
     }
 }

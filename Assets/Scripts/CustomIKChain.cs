@@ -26,7 +26,7 @@ public class CustomIKChain
 
 
     // Créer la chaine d'IK en partant du noeud endNode et en remontant jusqu'au noeud plus haut, ou jusqu'à la racine
-    public CustomIKChain(Transform _endNode, Transform _rootTarget = null, Transform _endTarget = null)
+    public CustomIKChain(Transform _endNode, Transform _rootNode, Transform _rootTarget = null, Transform _endTarget = null)
     {
         Debug.Log("=== IKChain::createChain: ===");
         // TODO : construire la chaine allant de _endNode vers _rootTarget en remontant dans l'arbre. 
@@ -39,7 +39,7 @@ public class CustomIKChain
             rootTarget = new CustomIKJoint(_rootTarget);
 
         Transform currentNode = _endNode;
-        Transform end = _rootTarget;        
+        Transform end = _rootNode;        
         while(currentNode != end)
         {
             //constraint
@@ -62,11 +62,11 @@ public class CustomIKChain
         // Dans le cas d'une unique chaine, ne rien faire pour l'instant.
 
         // si le premier courant est egal au premier de j, le courant recupere j
-        if (First().name == j.Last().name){
+        if (First().name == j.Last().name)
             joints[0] = j.Last();
-        }
+        
         // pareil pour le dernier
-        if (Last().GetHashCode() == j.First().GetHashCode())
+        if (Last().name == j.First().name)
             joints[joints.Count - 1] = j.First();
     }
 
@@ -86,7 +86,7 @@ public class CustomIKChain
         // puis on remonte du noeud N-2 au noeud 0 de la liste 
         // en résolvant les contrainte avec la fonction Solve de CustomIKJoint.
         if (endTarget != null)
-            Last().SetPosition(endTarget.position);
+            Last().SetPosition(endTarget.positionTransform);
         for(int i = joints.Count - 2; i >= 0; i--)
         {
             joints[i].Solve(joints[i + 1], constraints[i]);
@@ -97,7 +97,7 @@ public class CustomIKChain
     {
         // TODO : une passe descendante de FABRIK. Placer le noeud 0 sur son origine puis on descend.
         // Codez et deboguez déjà Backward avant d'écrire celle-ci.
-        if (rootTarget != null)
+        if (rootTarget != null) 
             First().SetPosition(rootTarget.position);
         for (int i = 1; i < joints.Count; i++)
         {
@@ -116,11 +116,15 @@ public class CustomIKChain
 
     public void Check()
     {
+        if (rootTarget != null)
+            Debug.Log("Chain has root target:" + rootTarget.name);
+        else
+            Debug.Log("Chain has no root target");
         // TODO : des Debug.Log pour afficher le contenu de la chaine (ne sert que pour le debug)
         for(int i = 0; i < constraints.Count; i++)
         {
-            Debug.Log("Joint " + i + " has constraint " + constraints[i]);
-        }
+            Debug.Log("Joint " + i + " has constraint " + constraints[i] + " " + First().name + " " + Last().name);
+        };
     }
 
 }
